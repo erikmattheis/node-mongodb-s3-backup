@@ -92,7 +92,9 @@ function mongoDump(options, directory, callback) {
   mongoOptions= [
     '-h', options.host + ':' + options.port,
     '-d', options.db,
-    '-o', directory
+    '-o', directory,
+    '--collection', options.collection,
+    '--query', options.query
   ];
 
   if(options.username && options.password) {
