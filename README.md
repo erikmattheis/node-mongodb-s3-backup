@@ -10,10 +10,6 @@ passes config options.
 * The mongodump is passed --collection and --query options allowing
 fine control over what from the database is backed up.
 
-## Installation
-
-    npm install mongodb_s3_backup
-
 ## Configuration
 
 To configure the backup, you need to pass the sync() functions the configuration.
@@ -41,7 +37,7 @@ var s3Options = {
       };
 ```
 
-# Example use
+## Example use
 
 ```
 var s3Backup = require('./node-mongodb-s3-backup'),
