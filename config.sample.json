@@ -13,9 +13,6 @@
     "destination": "/",
     "encrypt": true,
     "region": "s3_region_to_use"
-  },
-  "cron": {
-    "time": "00:00"
   }
 }
 
