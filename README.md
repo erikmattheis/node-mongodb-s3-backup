@@ -1,15 +1,14 @@
 # Node MongoDB / S3 Backup
 
 This is a package that makes backing up your mongo databases to S3 simple.
-The binary file is a node cronjob that runs at midnight every day and backs up
-the database specified in the config file.
 
 In this fork,
 
+* Command-line and chron functionality has been removed
 * The module is to be used as a dependency to another module that
 passes config options.
 * The mongodump is passed --collection and --query options allowing
-controll over what from the database is backed up.
+fine control over what from the database is backed up.
 
 ## Installation
 
