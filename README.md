@@ -4,69 +4,66 @@ This is a package that makes backing up your mongo databases to S3 simple.
 The binary file is a node cronjob that runs at midnight every day and backs up
 the database specified in the config file.
 
+In this fork,
+
+* The module is to be used as a dependency to another module that
+passes config options.
+* The mongodump is passed --collection and --query options allowing
+controll over what from the database is backed up.
+
 ## Installation
 
-    npm install mongodb_s3_backup -g
+    npm install mongodb_s3_backup
 
 ## Configuration
 
-To configure the backup, you need to pass the binary a JSON configuration file.
-There is a sample configuration file supplied in the package (`config.sample.json`).
-The file should have the following format:
+To configure the backup, you need to pass the sync() functions the configuration.
 
-    {
-      "mongodb": {
+The configuration objects should be as follows::
+
+```
+var dbOptions = {
         "host": "localhost",
         "port": 27017,
         "username": false,
         "password": false,
-        "db": "database_to_backup"
-      },
-      "s3": {
+        "db": "database_to_backup",
+        "collection": "collection_to_backup",
+        "query": "{}"
+      };
+
+var s3Options = {
         "key": "your_s3_key",
         "secret": "your_s3_secret",
         "bucket": "s3_bucket_to_upload_to",
         "destination": "/",
         "encrypt": true,
         "region": "s3_region_to_use"
-      },
-      "cron": {
-        "time": "11:59",
-      }
-    }
+      };
+```
+
+# Example use
+
+```
+var s3Backup = require('./node-mongodb-s3-backup'),
+config = require('./config.json');
+
+var lastMidnight = new Date()
+  .setHours(0,0,0,0)
+  .getTime();
+
+var query = '{'
+  + '\"timestamp\":{'
+  + '\"\$gte\":' + lastMidnight + ','
+  + '\"$lt\":' + (lastMidnight + (24*60*60*1000)) + '}}';
+
+var dbOptions = config.mongodb;
+  dbOptions.query = query;
+
+s3Backup.sync(dbOptions, config.s3, function(err, result) {
+    if (err) return console.error(err);
+    console.info("Exiting:", result);
+  });
+```
 
 All options in the "s3" object, except for desination, will be directly passed to knox, therefore, you can include any of the options listed [in the knox documentation](https://github.com/LearnBoost/knox#client-creation-options "Knox README").
-
-### Crontabs
-
-You may optionally substitute the cron "time" field with an explicit "crontab"
-of the standard format `0 0 * * *`.
-
-      "cron": {
-        "crontab": "0 0 * * *"
-      }
-
-*Note*: The version of cron that we run supports a sixth digit (which is in seconds) if
-you need it.
-
-### Timezones
-
-The optional "timezone" allows you to specify timezone-relative time regardless
-of local timezone on the host machine.
-
-      "cron": {
-        "time": "00:00",
-        "timezone": "America/New_York"
-      }
-
-You must first `npm install time` to use "timezone" specification.
-
-## Running
-
-To start a long-running process with scheduled cron job:
-
-    mongodb_s3_backup <path to config file>
-
-To execute a backup immediately and exit:
-
-    mongodb_s3_backup -n <path to config file>
