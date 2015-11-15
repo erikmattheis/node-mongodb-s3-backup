@@ -4,7 +4,9 @@
     "port": 27017,
     "username": false,
     "password": false,
-    "db": "database_to_backup"
+    "db": "database_to_backup",
+    "collection": "collection_to_backup",
+    "query": "{}"
   },
   "s3": {
     "key": "your_s3_key",
