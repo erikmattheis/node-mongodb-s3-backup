@@ -248,8 +248,11 @@ function sync(mongodbConfig, s3Config, callback) {
   ]), function(err) {
     if(err) {
       log(err, 'error');
+      return callback(err);
     } else {
-      log('Successfully backed up ' + mongodbConfig.db);
+      var result = new Date().toDateString() + ' Successfully backed up last 24 hours of ' + mongodbConfig.db + '.' + mongodbConfig.collection;
+      log(result);
+      return callback(null, result);
     }
     // cleanup folders
     async.series(tmpDirCleanupFns, function() {
